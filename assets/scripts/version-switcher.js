@@ -102,6 +102,7 @@
         }
 
         var currentVersion = detectCurrentVersion(versions, siteRoot);
+        select.textContent = "";
 
         versions.forEach(function (version) {
             var option = document.createElement("option");
@@ -113,18 +114,21 @@
             select.appendChild(option);
         });
 
-        select.addEventListener("change", function (event) {
-            var nextVersion = versions.find(function (version) {
-                return version.name === event.target.value;
+        if (select.dataset.thornforgeBound !== "true") {
+            select.addEventListener("change", function (event) {
+                var nextVersion = versions.find(function (version) {
+                    return version.name === event.target.value;
+                });
+
+                if (!nextVersion) {
+                    return;
+                }
+
+                var targetUrl = buildTargetUrl(siteRoot, currentVersionRoot, nextVersion);
+                window.location.assign(targetUrl.toString());
             });
-
-            if (!nextVersion) {
-                return;
-            }
-
-            var targetUrl = buildTargetUrl(siteRoot, currentVersionRoot, nextVersion);
-            window.location.assign(targetUrl.toString());
-        });
+            select.dataset.thornforgeBound = "true";
+        }
 
         container.hidden = false;
     }

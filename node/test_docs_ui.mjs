@@ -66,8 +66,8 @@ async function main() {
 
         const scripts = [
             path.join("docs", latestVersion, "_static", "documentation_options.js"),
-            path.join("docs", latestVersion, "_static", "top-nav.js"),
-            path.join("docs", latestVersion, "_static", "version-switcher.js"),
+            path.join("docs", latestVersion, "assets", "scripts", "top-nav.js"),
+            path.join("docs", latestVersion, "assets", "scripts", "version-switcher.js"),
         ];
 
         for (const scriptPath of scripts) {
@@ -98,6 +98,9 @@ async function main() {
     if (hostedOptions.length < 2) {
         fail(`Expected at least 2 hosted version options, found ${hostedOptions.length}`);
     }
+    if (new Set(hostedOptions.map((option) => option.value)).size !== hostedOptions.length) {
+        fail(`Hosted version switcher rendered duplicate options: ${hostedOptions.map((option) => option.value).join(", ")}`);
+    }
 
     const fileRoot = path.resolve(siteRoot);
     const fileHome = await runPage("index.html", fileUrlFor(fileRoot, "index.html"), "file");
@@ -119,6 +122,9 @@ async function main() {
     }
     if (fileOptions.length < 2) {
         fail(`Expected at least 2 local file version options, found ${fileOptions.length}`);
+    }
+    if (new Set(fileOptions.map((option) => option.value)).size !== fileOptions.length) {
+        fail(`Local file version switcher rendered duplicate options: ${fileOptions.map((option) => option.value).join(", ")}`);
     }
 
     console.log(

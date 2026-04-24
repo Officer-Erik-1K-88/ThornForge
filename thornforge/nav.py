@@ -6,6 +6,7 @@ when the source HTML is incomplete or fragmentary.
 """
 
 import html
+from pathlib import Path
 import re
 
 from thornforge.constant import build_site_nav_script_src, build_stylesheet_hrefs
@@ -102,10 +103,14 @@ def inject_document_assets(document: str, stylesheet_hrefs: list[str], script_sr
             wrapped = stylesheet_block + "\n" + wrapped
             lowered = wrapped.lower()
 
+    existing_script_basenames = {
+        Path(match.group(1).split("?", 1)[0]).name
+        for match in re.finditer(r'<script[^>]+src="([^"]+)"', wrapped, flags=re.IGNORECASE)
+    }
     missing_script_tags = [
         f'<script src="{html.escape(script_src, quote=True)}" defer></script>'
         for script_src in script_srcs
-        if script_src not in wrapped
+        if script_src not in wrapped and Path(script_src).name not in existing_script_basenames
     ]
     if missing_script_tags:
         # Scripts are also added idempotently so post-processing can be rerun safely.
