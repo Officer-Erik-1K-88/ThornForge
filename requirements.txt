@@ -2,5 +2,3 @@ setuptools~=82.0.1
 setuptools-scm~=10.0.5
 build~=1.4.3
 twine~=6.2.0
-sphinx~=9.1.0
-docutils~=0.22.4
