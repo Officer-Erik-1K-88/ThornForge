@@ -1,7 +1,7 @@
 import html
 import re
 
-from thornforge.constant import build_site_nav_stylesheet_href, build_site_nav_script_src
+from thornforge.constant import build_site_nav_script_src, build_stylesheet_hrefs
 
 
 def build_site_nav_placeholder_html(
@@ -18,40 +18,9 @@ def build_site_nav_placeholder_html(
     )
 
 
-def wrap_info_html_document(document: str, root_prefix: str, *, title: str = "PieThorn", current_path: str) -> str:
-    safe_title = html.escape(title)
-    nav_html = build_site_nav_placeholder_html(root_prefix, current_path=current_path)
-    stylesheet_href = build_site_nav_stylesheet_href(root_prefix)
-    stylesheet_link = f'<link rel="stylesheet" href="{stylesheet_href}">'
-    script_src = build_site_nav_script_src(root_prefix)
-    script_tag = f'<script src="{script_src}" defer></script>'
+def inject_document_assets(document: str, stylesheet_hrefs: list[str], script_srcs: list[str]) -> str:
     wrapped = document.strip()
     lowered = wrapped.lower()
-
-    has_html = "<html" in lowered
-    has_head = "<head" in lowered
-    has_body = "<body" in lowered
-
-    if not has_html:
-        new_wrapped = f"<!DOCTYPE html>\n<html lang=\"en\">\n"
-        if not has_head:
-            new_wrapped += (
-                "<head>\n"
-                "<meta charset=\"utf-8\">\n"
-                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
-                "</head>\n"
-            )
-        if has_head and has_body:
-            new_wrapped += wrapped
-        elif has_head:
-            new_wrapped += f"{wrapped}\n<body>\n</body>"
-        elif has_body:
-            new_wrapped += wrapped
-        else:
-            new_wrapped += f"<body>\n{wrapped}\n</body>"
-        new_wrapped += "\n</html>"
-        wrapped = new_wrapped
-        lowered = wrapped.lower()
 
     if "<head" not in lowered:
         wrapped = re.sub(
@@ -81,23 +50,71 @@ def wrap_info_html_document(document: str, root_prefix: str, *, title: str = "Pi
             wrapped += "\n<body>\n</body>"
         lowered = wrapped.lower()
 
+    missing_stylesheet_links = [
+        f'<link rel="stylesheet" href="{html.escape(stylesheet_href, quote=True)}">'
+        for stylesheet_href in stylesheet_hrefs
+        if stylesheet_href not in wrapped
+    ]
+    if missing_stylesheet_links:
+        stylesheet_block = "\n".join(missing_stylesheet_links)
+        if "</head>" in lowered:
+            wrapped = re.sub(r"</head>", stylesheet_block + "\n</head>", wrapped, count=1, flags=re.IGNORECASE)
+            lowered = wrapped.lower()
+        else:
+            wrapped = stylesheet_block + "\n" + wrapped
+            lowered = wrapped.lower()
+
+    missing_script_tags = [
+        f'<script src="{html.escape(script_src, quote=True)}" defer></script>'
+        for script_src in script_srcs
+        if script_src not in wrapped
+    ]
+    if missing_script_tags:
+        script_block = "\n".join(missing_script_tags)
+        if "</body>" in lowered:
+            wrapped = re.sub(r"</body>", script_block + "\n</body>", wrapped, count=1, flags=re.IGNORECASE)
+            lowered = wrapped.lower()
+        else:
+            wrapped += "\n" + script_block
+            lowered = wrapped.lower()
+
+    return wrapped
+
+
+def wrap_info_html_document(document: str, root_prefix: str, *, title: str = "PieThorn", current_path: str) -> str:
+    safe_title = html.escape(title)
+    nav_html = build_site_nav_placeholder_html(root_prefix, current_path=current_path)
+    wrapped = document.strip()
+    lowered = wrapped.lower()
+
+    has_html = "<html" in lowered
+    has_head = "<head" in lowered
+    has_body = "<body" in lowered
+
+    if not has_html:
+        new_wrapped = f"<!DOCTYPE html>\n<html lang=\"en\">\n"
+        if not has_head:
+            new_wrapped += (
+                "<head>\n"
+                "<meta charset=\"utf-8\">\n"
+                "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n"
+                "</head>\n"
+            )
+        if has_head and has_body:
+            new_wrapped += wrapped
+        elif has_head:
+            new_wrapped += f"{wrapped}\n<body>\n</body>"
+        elif has_body:
+            new_wrapped += wrapped
+        else:
+            new_wrapped += f"<body>\n{wrapped}\n</body>"
+        new_wrapped += "\n</html>"
+        wrapped = new_wrapped
+        lowered = wrapped.lower()
+
+    wrapped = inject_document_assets(wrapped, build_stylesheet_hrefs(root_prefix), [build_site_nav_script_src(root_prefix)])
+    lowered = wrapped.lower()
     has_nav = '<nav class="site-top-nav"' in lowered
-    has_stylesheet_link = stylesheet_href in wrapped
-    has_script_tag = script_src in wrapped
-
-    if "</head>" in lowered and not has_stylesheet_link:
-        wrapped = re.sub(r"</head>", stylesheet_link + "\n</head>", wrapped, count=1, flags=re.IGNORECASE)
-        lowered = wrapped.lower()
-    elif "</head>" not in lowered and not has_stylesheet_link:
-        wrapped = stylesheet_link + "\n" + wrapped
-        lowered = wrapped.lower()
-
-    if "</body>" in lowered and not has_script_tag:
-        wrapped = re.sub(r"</body>", script_tag + "\n</body>", wrapped, count=1, flags=re.IGNORECASE)
-        lowered = wrapped.lower()
-    elif "</body>" not in lowered and not has_script_tag:
-        wrapped += "\n" + script_tag
-        lowered = wrapped.lower()
 
     if "<title" not in lowered and "</head>" in lowered:
         wrapped = re.sub(r"</head>", f"<title>{safe_title}</title>\n</head>", wrapped, count=1, flags=re.IGNORECASE)
