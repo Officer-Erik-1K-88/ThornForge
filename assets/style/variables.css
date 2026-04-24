@@ -1,0 +1,25 @@
+:root {
+    color-scheme: light;
+
+    /* Colors: RGB values */
+    --bg: 245 239 229;
+    --bg2: 249 242 231;
+    --surface: 255 250 242;
+    --ink: 35 24 15;
+    --ink2: 255 255 255;
+    --muted: 106 86 69;
+    --accent: 155 61 16;
+    --accent2: 217 123 45;
+    --border-color: 219 198 178;
+    /* Colors: Alpha values */
+    --a-hard: 1.0;
+    --a-hard2: 0.94;
+    --a-hard3: 0.92;
+    --a-muted: 0.65;
+    --a-soft: 0.45;
+    --a-soft2: 0.35;
+    --a-soft3: 0.2;
+    --a-faint: 0.18;
+    --a-faint2: 0.12;
+    --a-faint3: 0.05;
+}
