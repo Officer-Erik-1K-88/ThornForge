@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools >= 82", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thornforge"
+description = "This is a build tool."
+readme = "README.rst"
+authors = [
+    { name="Officer Erik 1K-88", email="oficer.erik.k@gmail.com" },
+]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">= 3.12"
+keywords = ['python', 'utils', 'tools', 'utilities']
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://officer-erik-1k-88.github.io/ThornForge"
+Documentation = "https://officer-erik-1k-88.github.io/ThornForge/docs"
+Repository = "https://github.com/Officer-Erik-1K-88/ThornForge.git"
+Issues = "https://github.com/Officer-Erik-1K-88/ThornForge/issues"
+Changelog = "https://github.com/Officer-Erik-1K-88/ThornForge/blob/master/CHANGELOG.rst"
+
+[tool.setuptools_scm]
+version_file = "thornforge/_version.py"
