@@ -16,6 +16,7 @@ HTML_TEMPLATE_ROOT = ASSET_ROOT / "templates" / "html"
 SHARED_CSS_ASSET_PATHS = (
     Path("style/variables.css"),
     Path("style/style.css"),
+    Path("style/alert.css"),
     Path("style/nav.css"),
     Path("style/version.css"),
 )

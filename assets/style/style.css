@@ -37,6 +37,28 @@ h1 {
     line-height: 0.95;
 }
 
+h1.logo {
+    margin-top: -10px;
+    text-align: center;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+h1.logo-name {
+    margin-top: 0px;
+}
+
+p.logo {
+    padding: 0;
+    margin: -10px 0 0 0px;
+    text-align: center;
+}
+
+p.logo a,
+p.logo a:hover {
+    border: none;
+}
+
 .lede {
     margin: 0;
     max-width: 42rem;
@@ -94,9 +116,30 @@ h1 {
     line-height: 1.55;
 }
 
-code {
+span.pre {
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    -webkit-hyphens: none;
+    hyphens: none;
+    white-space: nowrap;
+}
+
+pre {
+    background: unset;
+    padding: 7px 30px;
+    margin: 15px 0px;
+    line-height: 1.3em;
+}
+
+pre, tt, code {
     font-family: "SFMono-Regular", Consolas, monospace;
     font-size: 0.95em;
+}
+
+tt, code {
+    background-color: rgb(var(--color-bg-code) / var(--alpha-full));
+    color: rgb(var(--color-text-code) / var(--alpha-full));
+    /* padding: 1px 2px; */
 }
 
 @media (max-width: 40rem) {

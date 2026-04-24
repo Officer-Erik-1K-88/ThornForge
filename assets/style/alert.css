@@ -1,0 +1,63 @@
+.highlight {
+    background: var(--color-highlight);
+}
+
+.warning {
+    background-color: var(--color-warning);
+    border: 1px solid var(--color-warning-border);
+}
+
+.danger {
+    background-color: var(--color-danger);
+    border: 1px solid var(--color-danger-border);
+    -moz-box-shadow: 2px 2px 4px var(--color-danger-shadow);
+    -webkit-box-shadow: 2px 2px 4px var(--color-danger-shadow);
+    box-shadow: 2px 2px 4px var(--color-danger-shadow);
+}
+
+.error {
+    background-color: var(--color-error);
+    border: 1px solid var(--color-error-border);
+    -moz-box-shadow: 2px 2px 4px var(--color-error-shadow);
+    -webkit-box-shadow: 2px 2px 4px var(--color-error-shadow);
+    box-shadow: 2px 2px 4px var(--color-error-shadow);
+}
+
+.caution {
+    background-color: var(--color-caution);
+    border: 1px solid var(--color-caution-border);
+}
+
+.attention {
+    background-color: var(--color-attention);
+    border: 1px solid var(--color-attention-border);
+}
+
+.important {
+    background-color: var(--color-important);
+    border: 1px solid var(--color-important-border);
+}
+
+.note {
+    background-color: var(--color-note);
+    border: 1px solid var(--color-note-border);
+}
+
+.tip {
+    background-color: var(--color-tip);
+    border: 1px solid var(--color-tip-border);
+}
+
+.hint {
+    background-color: var(--color-hint);
+    border: 1px solid var(--color-hint-border);
+}
+
+.seealso {
+    background-color: var(--color-see-also);
+    border: 1px solid var(--color-see-also-border);
+}
+
+.topic {
+    background-color: var(--color-topic);
+}

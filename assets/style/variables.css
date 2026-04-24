@@ -6,10 +6,15 @@
     --color-bg2: 249 242 231;
     --color-surface: 255 250 242;
 
+    /* Background Colors */
+    --color-bg-code: 236 240 243;
+
     /* Text Colors */
     --color-text: 35 24 15;
     --color-text-invese: 255 255 255;
     --color-muted: 106 86 69;
+
+    --color-text-code: 34 29 24;
 
     /* Brand colors */
     --color-accent: 155 61 16;
@@ -17,6 +22,43 @@
 
     /* Borders */
     --color-border: 219 198 178;
+
+    /* Alert */
+    --color-highlight: #FAF3E8;
+
+    --color-warning: #FCC;
+    --color-warning-border: #FAA;
+
+    --color-danger: #FCC;
+    --color-danger-border: #FAA;
+    --color-danger-shadow: #D52C2C;
+
+    --color-error: #FCC;
+    --color-error-border: #FAA;
+    --color-error-shadow: #D52C2C;
+
+    --color-caution: #FCC;
+    --color-caution-border: #FAA;
+
+    --color-attention: #FCC;
+    --color-attention-border: #FAA;
+
+    --color-important: #EEE;
+    --color-important-border: #CCC;
+
+    --color-note: #EEE;
+    --color-note-border: #CCC;
+
+    --color-tip: #EEE;
+    --color-tip-border: #CCC;
+
+    --color-hint: #EEE;
+    --color-hint-border: #CCC;
+
+    --color-see-also: #EEE;
+    --color-see-also-border: #CCC;
+
+    --color-topic: #EEE;
 
     /* Alpha */
     --alpha-full: 1.0;
