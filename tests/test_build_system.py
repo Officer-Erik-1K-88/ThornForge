@@ -1,4 +1,9 @@
 from __future__ import annotations
+"""Regression tests for repository discovery and the generated site layout.
+
+These tests build minimal temporary repositories so the generic build pipeline
+can be validated without depending on this repository's own layout.
+"""
 
 from pathlib import Path
 import tempfile
@@ -9,15 +14,32 @@ from thornforge.repository import discover_repository_profile
 
 
 class BuildSystemTests(unittest.TestCase):
+    """Exercise the generic build pipeline against minimal temporary repositories.
+
+    The tests focus on repository discovery and end-to-end build output shape,
+    especially the parts that were recently generalized away from project-
+    specific assumptions.
+    """
+
     def test_discover_repository_profile_prefers_nested_docs_source(self) -> None:
+        """Verify repository discovery preserves a nested ``docs/source`` layout.
+
+        The temporary repository declares a basic ``pyproject.toml`` and a Sphinx
+        ``conf.py`` under ``docs/source``. The expected result is that
+        ``discover_repository_profile`` points at that nested directory and uses
+        the project metadata for naming and version defaults.
+        """
+
         with tempfile.TemporaryDirectory() as temp_dir:
             repo_root = Path(temp_dir)
+            # Provide the minimum project metadata needed for profile discovery.
             (repo_root / "pyproject.toml").write_text(
                 "[project]\nname = 'sample-project'\nversion = '1.2.3'\n",
                 encoding="utf-8",
             )
             docs_source = repo_root / "docs" / "source"
             docs_source.mkdir(parents=True)
+            # The presence of conf.py is what makes this directory a docs root candidate.
             (docs_source / "conf.py").write_text("project = 'sample-project'\n", encoding="utf-8")
 
             profile = discover_repository_profile(repo_root)
@@ -28,6 +50,14 @@ class BuildSystemTests(unittest.TestCase):
             self.assertIn("docs/source", profile.input_paths)
 
     def test_build_versioned_site_builds_non_git_repo(self) -> None:
+        """Verify a plain non-Git directory still produces a complete site.
+
+        The test creates a minimal local repository with Sphinx docs and no Git
+        metadata. It then builds the site and checks that shared assets, docs
+        output, generated JSON metadata, symlinks, and rendered project pages
+        all exist in the expected locations.
+        """
+
         with tempfile.TemporaryDirectory() as temp_dir:
             workspace = Path(temp_dir)
             repo_root = workspace / "repo"
@@ -35,6 +65,7 @@ class BuildSystemTests(unittest.TestCase):
             docs_source = repo_root / "docs"
             docs_source.mkdir(parents=True)
 
+            # Build a small repository fixture with one docs page and one project metadata page.
             (repo_root / "pyproject.toml").write_text(
                 "[project]\nname = 'sample-project'\nversion = '1.2.3'\n",
                 encoding="utf-8",
@@ -53,14 +84,17 @@ class BuildSystemTests(unittest.TestCase):
 
             build_versioned_site(repo_root, output_dir)
 
+            # Site root assets should exist because ThornForge copies its full asset tree there.
             self.assertTrue((output_dir / ".nojekyll").exists())
             self.assertTrue((output_dir / "assets" / "style" / "variables.css").exists())
             self.assertTrue((output_dir / "assets" / "style" / "style.css").exists())
             self.assertTrue((output_dir / "assets" / "style" / "nav.css").exists())
             self.assertTrue((output_dir / "assets" / "style" / "version.css").exists())
             self.assertTrue((output_dir / "assets" / "scripts" / "top-nav.js").exists())
+            # The docs version directory should contain built HTML plus its own copied asset tree.
             self.assertTrue((output_dir / "docs" / "1.2.3" / "index.html").exists())
             self.assertTrue((output_dir / "docs" / "1.2.3" / "assets" / "style" / "variables.css").exists())
+            # The generated docs page should reference all shared CSS and JS assets.
             index_html = (output_dir / "docs" / "1.2.3" / "index.html").read_text(encoding="utf-8")
             self.assertIn('href="assets/style/variables.css"', index_html)
             self.assertIn('href="assets/style/style.css"', index_html)
