@@ -72,6 +72,7 @@ instance/
 # Sphinx documentation
 docs/_build/
 node_modules/
+test-site/
 
 # PyBuilder
 .pybuilder/

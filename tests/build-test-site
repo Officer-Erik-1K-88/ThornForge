@@ -1,0 +1,1 @@
+./.venv/bin/python -m thornforge.build_versioned_docs --source /mnt/programming/Libs/Python/PieThorn/ --output ./test-site
