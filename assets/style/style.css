@@ -6,9 +6,9 @@ body {
     margin: 0;
     font-family: Georgia, "Times New Roman", serif;
     background:
-            radial-gradient(circle at top left, rgb(var(--accent2) / var(--a-faint)), transparent 32rem),
-            linear-gradient(180deg, rgb(var(--bg2) / var(--a-hard)) 0%, rgb(var(--bg) / var(--a-hard)) 100%);
-    color: rgb(var(--ink) / var(--a-hard));
+            radial-gradient(circle at top left, rgb(var(--color-accent-alt) / var(--alpha-subtle2)), transparent 32rem),
+            linear-gradient(180deg, rgb(var(--color-bg2) / var(--alpha-full)) 0%, rgb(var(--color-bg) / var(--alpha-full)) 100%);
+    color: rgb(var(--color-text) / var(--alpha-full));
 }
 
 main {
@@ -25,7 +25,7 @@ main {
 
 .eyebrow {
     margin: 0;
-    color: rgb(var(--accent) / var(--a-hard));
+    color: rgb(var(--color-accent) / var(--alpha-full));
     font-size: 0.9rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -40,7 +40,7 @@ h1 {
 .lede {
     margin: 0;
     max-width: 42rem;
-    color: rgb(var(--muted) / var(--a-hard));
+    color: rgb(var(--color-muted) / var(--alpha-full));
     font-size: 1.15rem;
     line-height: 1.6;
 }
@@ -54,18 +54,18 @@ h1 {
 .button {
     display: inline-block;
     padding: 0.85rem 1.15rem;
-    border: 1px solid rgb(var(--accent) / var(--a-hard));
+    border: 1px solid rgb(var(--color-accent) / var(--alpha-full));
     border-radius: 999px;
     text-decoration: none;
-    color: rgb(var(--ink2) / var(--a-hard));
-    background: linear-gradient(135deg, rgb(var(--accent) / var(--a-hard)), rgb(var(--accent2) / var(--a-hard)));
+    color: rgb(var(--color-text-invese) / var(--alpha-full));
+    background: linear-gradient(135deg, rgb(var(--color-accent) / var(--alpha-full)), rgb(var(--color-accent-alt) / var(--alpha-full)));
     font-weight: 700;
 }
 
 .button.secondary {
-    color: rgb(var(--ink) / var(--a-hard));
+    color: rgb(var(--color-text) / var(--alpha-full));
     background: transparent;
-    border-color: rgb(var(--border-color) / var(--a-hard));
+    border-color: rgb(var(--color-border) / var(--alpha-full));
 }
 
 .grid {
@@ -76,10 +76,10 @@ h1 {
 
 .card {
     padding: 1.25rem;
-    border: 1px solid rgb(var(--border-color) / var(--a-hard));
+    border: 1px solid rgb(var(--color-border) / var(--alpha-full));
     border-radius: 1rem;
-    background: rgb(var(--surface) / var(--a-hard3));
-    box-shadow: 0 0.8rem 2rem rgb(var(--ink) / var(--a-faint3));
+    background: rgb(var(--color-surface) / var(--alpha-raised));
+    box-shadow: 0 0.8rem 2rem rgb(var(--color-text) / var(--alpha-ghost));
 }
 
 .card h2 {
@@ -90,7 +90,7 @@ h1 {
 
 .card p {
     margin: 0;
-    color: rgb(var(--muted) / var(--a-hard));
+    color: rgb(var(--color-muted) / var(--alpha-full));
     line-height: 1.55;
 }
 
