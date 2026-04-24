@@ -17,6 +17,34 @@ from thornforge.info_site import root_prefix_for_output
 from thornforge.nav import build_site_nav_placeholder_html, wrap_info_html_document
 
 
+def render_project_page_body(source_path: Path) -> tuple[str, str]:
+    """Convert one project metadata file into wrapped-page inputs.
+
+    Args:
+        source_path: Source metadata file such as ``README.rst`` or
+            ``CHANGELOG.txt``.
+
+    Returns:
+        Tuple of ``(title, body_html)`` suitable for ``wrap_info_html_document``.
+    """
+
+    source = source_path.read_text(encoding="utf-8")
+    suffix = source_path.suffix.lower()
+
+    if suffix == ".rst":
+        from docutils.core import publish_parts
+
+        parts = publish_parts(source=source, writer_name="html5")
+        title = parts.get("title", source_path.stem)
+        body_html = parts.get("body") or parts.get("whole") or ""
+        return title, body_html
+
+    if suffix == ".txt":
+        return source_path.stem, f"<pre>{html.escape(source)}</pre>"
+
+    return source_path.stem, source
+
+
 def render_project_site_pages(
     repo_root: Path,
     output_dir: Path,
@@ -52,12 +80,13 @@ def render_project_site_pages(
 
         root_prefix = root_prefix_for_output(output_relative_path)
         destination.parent.mkdir(parents=True, exist_ok=True)
+        title, body_html = render_project_page_body(source_path)
         # Reuse the info-page wrapper so metadata pages get the same shared navigation shell.
         destination.write_text(
             wrap_info_html_document(
-                source_path.read_text(encoding="utf-8"),
+                body_html,
                 root_prefix,
-                title=source_path.stem,
+                title=title,
                 current_path=output_relative_path.as_posix(),
             ),
             encoding="utf-8",
