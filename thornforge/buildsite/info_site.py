@@ -11,8 +11,8 @@ from pathlib import Path
 import shutil
 from typing import Iterable
 
-from thornforge.constant import INFO_RENDERED_SUFFIXES
-from thornforge.nav import wrap_info_html_document
+from thornforge.buildsite.constant import INFO_RENDERED_SUFFIXES
+from thornforge.buildsite.nav import wrap_info_html_document
 
 
 def iter_info_files(info_dir: Path) -> Iterable[Path]:

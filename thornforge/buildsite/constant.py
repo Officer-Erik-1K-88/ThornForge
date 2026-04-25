@@ -9,7 +9,7 @@ from pathlib import Path
 
 INJECTED_CONF_MARKER = "# Injected by thornforge/build_site.py"
 INFO_RENDERED_SUFFIXES = {".rst", ".txt"}
-TOOL_ROOT = Path(__file__).resolve().parents[1]
+TOOL_ROOT = Path(__file__).resolve().parents[2]
 ASSET_ROOT = TOOL_ROOT / "assets"
 HTML_TEMPLATE_ROOT = ASSET_ROOT / "templates" / "html"
 # These stylesheets are injected individually to preserve layering order.

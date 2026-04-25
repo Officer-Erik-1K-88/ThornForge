@@ -9,7 +9,7 @@ import html
 from pathlib import Path
 import re
 
-from thornforge.constant import build_site_nav_script_src, build_stylesheet_hrefs
+from thornforge.buildsite.constant import build_site_nav_script_src, build_stylesheet_hrefs
 
 
 def build_site_nav_placeholder_html(

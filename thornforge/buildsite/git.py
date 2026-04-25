@@ -9,7 +9,7 @@ import subprocess
 import tarfile
 from pathlib import Path
 
-from thornforge.constant import (
+from thornforge.buildsite.constant import (
     ASSET_ROOT,
     INJECTED_CONF_MARKER,
     SHARED_CSS_ASSET_PATHS,

@@ -9,8 +9,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from thornforge.build_site import build_versioned_site
-from thornforge.repository import discover_repository_profile
+from thornforge.buildsite.build_site import build_versioned_site
+from thornforge.buildsite.repository import discover_repository_profile
 
 
 class BuildSystemTests(unittest.TestCase):

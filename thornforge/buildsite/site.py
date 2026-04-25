@@ -11,10 +11,10 @@ import json
 from pathlib import Path
 import re
 
-from thornforge.builder import make_relative_symlink
-from thornforge.constant import build_site_nav_script_src, build_stylesheet_hrefs, load_html_template
-from thornforge.info_site import root_prefix_for_output
-from thornforge.nav import build_site_nav_placeholder_html, wrap_info_html_document
+from thornforge.buildsite.builder import make_relative_symlink
+from thornforge.buildsite.constant import build_site_nav_script_src, build_stylesheet_hrefs, load_html_template
+from thornforge.buildsite.info_site import root_prefix_for_output
+from thornforge.buildsite.nav import build_site_nav_placeholder_html, wrap_info_html_document
 
 
 def render_project_page_body(source_path: Path) -> tuple[str, str]:
@@ -107,7 +107,7 @@ def label_from_output_path(output_path: Path) -> str:
     if output_path == Path("index.html"):
         return "Home"
 
-    if output_path.name == "index.html" and output_path.parent != Path("."):
+    if output_path.name == "index.html" and output_path.parent != Path(".."):
         # Nested index pages should use the directory name rather than the file stem.
         source = output_path.parent.name
     else:

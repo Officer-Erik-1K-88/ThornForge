@@ -15,8 +15,8 @@ import tempfile
 import tomllib
 from urllib.parse import urlparse
 
-from thornforge.constant import METADATA_CANDIDATES, PROJECT_PAGE_CANDIDATES
-from thornforge.git import clone_repository, is_git_repository, run_git
+from thornforge.buildsite.constant import METADATA_CANDIDATES, PROJECT_PAGE_CANDIDATES
+from thornforge.buildsite.git import clone_repository, is_git_repository, run_git
 
 
 @dataclass(frozen=True)

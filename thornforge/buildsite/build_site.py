@@ -8,7 +8,6 @@ This module coordinates the end-to-end build workflow:
 4. Assemble the final static site tree with shared assets and runtime metadata.
 """
 
-import argparse
 from dataclasses import dataclass
 from pathlib import Path
 import shutil
@@ -16,17 +15,17 @@ import tempfile
 
 from packaging.version import InvalidVersion, Version
 
-from thornforge.builder import (
+from thornforge.buildsite.builder import (
     build_docs,
     copy_shared_site_assets,
     inject_built_docs_assets,
     inject_shared_navigation,
     make_relative_symlink,
 )
-from thornforge.git import copy_worktree, extract_ref, hash_version_inputs, hash_worktree_inputs, run_git
-from thornforge.info_site import copy_info_site
-from thornforge.repository import discover_repository_profile, materialize_source
-from thornforge.site import (
+from thornforge.buildsite.git import copy_worktree, extract_ref, hash_version_inputs, hash_worktree_inputs, run_git
+from thornforge.buildsite.info_site import copy_info_site
+from thornforge.buildsite.repository import discover_repository_profile, materialize_source
+from thornforge.buildsite.site import (
     embed_runtime_data,
     render_project_site_pages,
     write_docs_site_files,
@@ -208,50 +207,3 @@ def build_versioned_site(source: str | Path, output_dir: Path) -> None:
         versions_payload = write_docs_site_files(docs_dir, [version.name for version in versions], digests_by_version)
         # Inline the manifests into HTML so pages still work without extra fetches.
         embed_runtime_data(output_dir, site_nav_payload, versions_payload)
-
-
-def parse_args() -> argparse.Namespace:
-    """Parse command-line arguments for the build command.
-
-    Returns:
-        An ``argparse.Namespace`` containing:
-        ``source``: local path or GitHub repository URL to build.
-        ``output``: destination directory for the generated static site.
-    """
-
-    parser = argparse.ArgumentParser(description="Build a documentation site from a local package or GitHub repository.")
-    parser.add_argument(
-        "--source",
-        default=str(Path(__file__).resolve().parents[1]),
-        help="Local package path or GitHub repository URL to build.",
-    )
-    parser.add_argument(
-        "--repo-root",
-        dest="source",
-        help=argparse.SUPPRESS,
-    )
-    parser.add_argument(
-        "--output",
-        type=Path,
-        required=True,
-        help="Directory where the assembled static site should be written.",
-    )
-    return parser.parse_args()
-
-
-def main() -> None:
-    """Entry point used by ``python -m thornforge.build_versioned_docs``.
-
-    The function parses command-line arguments, normalizes local paths to
-    absolute paths, and then delegates the actual build to
-    ``build_versioned_site``.
-    """
-
-    args = parse_args()
-    # Preserve remote URLs as strings but normalize existing local paths to absolute paths.
-    source = Path(args.source).resolve() if Path(args.source).exists() else args.source
-    build_versioned_site(source, args.output.resolve())
-
-
-if __name__ == "__main__":
-    main()

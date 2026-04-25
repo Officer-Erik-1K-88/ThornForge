@@ -13,14 +13,14 @@ import shutil
 import subprocess
 import sys
 
-from thornforge.constant import (
+from thornforge.buildsite.constant import (
     ASSET_ROOT,
     HTML_TEMPLATE_ROOT,
     INJECTED_CONF_MARKER,
 )
-from thornforge.info_site import root_prefix_for_output
-from thornforge.nav import inject_document_assets
-from thornforge.constant import build_site_nav_script_src, build_stylesheet_hrefs, build_version_switcher_script_src
+from thornforge.buildsite.info_site import root_prefix_for_output
+from thornforge.buildsite.nav import inject_document_assets
+from thornforge.buildsite.constant import build_site_nav_script_src, build_stylesheet_hrefs, build_version_switcher_script_src
 
 
 def build_docs(worktree: Path, docs_source_dir: Path, output_dir: Path) -> None:
