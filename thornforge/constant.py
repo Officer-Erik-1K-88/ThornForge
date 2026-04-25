@@ -7,7 +7,7 @@ pipeline.
 
 from pathlib import Path
 
-INJECTED_CONF_MARKER = "# Injected by thornforge/build_versioned_docs.py"
+INJECTED_CONF_MARKER = "# Injected by thornforge/build_site.py"
 INFO_RENDERED_SUFFIXES = {".rst", ".txt"}
 TOOL_ROOT = Path(__file__).resolve().parents[1]
 ASSET_ROOT = TOOL_ROOT / "assets"
