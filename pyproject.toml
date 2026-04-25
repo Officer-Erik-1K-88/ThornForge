@@ -23,14 +23,20 @@ classifiers = [
     "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "sphinx~=9.1.0",
-    "docutils~=0.22.4",
-    "packaging~=26.1"
+    "sphinx>=9.1.0",
+    "docutils>=0.22.4",
+    "packaging>=26.1",
+	"rich >= 12.0.0",
+    "requests >= 2.20",
+	"id",
 ]
 dynamic = ["version"]
 
+[project.entry-points."thornforge.registered_commands"]
+buildsite = "thornforge.buildsite.__main__:main"
+
 [project.scripts]
-buildsite = "thornforge.buildsite:main"
+thornforge = "thornforge.__main__:main"
 
 [project.urls]
 Homepage = "https://officer-erik-1k-88.github.io/ThornForge"
