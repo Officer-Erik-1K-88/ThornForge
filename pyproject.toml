@@ -29,6 +29,9 @@ dependencies = [
 ]
 dynamic = ["version"]
 
+[project.scripts]
+buildsite = "thornforge.buildsite:main"
+
 [project.urls]
 Homepage = "https://officer-erik-1k-88.github.io/ThornForge"
 Documentation = "https://officer-erik-1k-88.github.io/ThornForge/docs"
