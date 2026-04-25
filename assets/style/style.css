@@ -38,6 +38,7 @@ h1 {
 }
 
 h1.logo {
+    font-size: 2em;
     margin-top: -10px;
     text-align: center;
     margin-bottom: 5px;
@@ -45,6 +46,7 @@ h1.logo {
 }
 
 h1.logo-name {
+    font-size: 2em;
     margin-top: 0px;
 }
 
@@ -114,32 +116,6 @@ p.logo a:hover {
     margin: 0;
     color: rgb(var(--color-muted) / var(--alpha-full));
     line-height: 1.55;
-}
-
-span.pre {
-    -moz-hyphens: none;
-    -ms-hyphens: none;
-    -webkit-hyphens: none;
-    hyphens: none;
-    white-space: nowrap;
-}
-
-pre {
-    background: unset;
-    padding: 7px 30px;
-    margin: 15px 0px;
-    line-height: 1.3em;
-}
-
-pre, tt, code {
-    font-family: "SFMono-Regular", Consolas, monospace;
-    font-size: 0.95em;
-}
-
-tt, code {
-    background-color: rgb(var(--color-bg-code) / var(--alpha-full));
-    color: rgb(var(--color-text-code) / var(--alpha-full));
-    /* padding: 1px 2px; */
 }
 
 @media (max-width: 40rem) {

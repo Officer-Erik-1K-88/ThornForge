@@ -1,0 +1,52 @@
+span.pre, span.docutils.literal {
+    -moz-hyphens: none;
+    -ms-hyphens: none;
+    -webkit-hyphens: none;
+    hyphens: none;
+    white-space: nowrap;
+}
+
+div, pre.code {
+    display: block;
+    unicode-bidi: isolate;
+}
+
+div[class*="highlight-"], pre.code {
+    margin: 1em 0;
+}
+
+pre, div[class*="highlight-"], pre.code code {
+    clear: both;
+}
+
+div.highlight pre, pre.code code {
+    margin: 0;
+}
+
+pre {
+    overflow: auto;
+    overflow-y: hidden;
+}
+
+pre.code code {
+    display: block;
+    white-space: pre;
+}
+
+pre, pre.code code {
+    background: unset;
+    padding: 7px 30px;
+    margin: 15px 0px;
+    line-height: 1.3em;
+}
+
+pre, tt, code, span.docutils.literal {
+    font-family: 'Consolas', 'Menlo', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', monospace;
+    font-size: 0.9em;
+}
+
+tt, code, span.docutils.literal, pre.code {
+    background-color: rgb(var(--color-bg-code) / var(--alpha-full));
+    color: rgb(var(--color-text-code) / var(--alpha-full));
+    padding: 2px 4px;
+}
