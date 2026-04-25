@@ -1,0 +1,16 @@
+exclude .codex
+exclude .gitignore
+
+prune .github
+prune .idea
+prune .venv
+prune dist
+prune docs/_build
+prune thornforge.egg-info
+prune scripts
+prune node
+prune info
+
+global-exclude __pycache__
+global-exclude *.py[cod]
+global-exclude *.so
