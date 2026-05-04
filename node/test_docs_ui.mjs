@@ -19,13 +19,35 @@ async function readText(rootDir, relativePath) {
 async function main() {
     const siteRoot = process.argv[2];
     if (!siteRoot) {
-        fail("Usage: node scripts/test_docs_ui.mjs <site-dir>");
+        fail("Usage: node test_docs_ui.mjs <site-dir>");
     }
 
     const versionsPayload = JSON.parse(await readText(siteRoot, "docs/versions.json"));
     const latestVersion = versionsPayload.latest;
     if (!latestVersion) {
         fail("docs/versions.json does not define a latest version");
+    }
+    const expectedVersionCount = versionsPayload.versions.length;
+
+    function assertVersionSwitcher(label, switcher, options, errors) {
+        if (!switcher) {
+            fail(`${label} version switcher element is missing. Console errors: ${errors.join(" | ") || "none"}`);
+        }
+        if (expectedVersionCount <= 1) {
+            if (!switcher.hidden) {
+                fail(`${label} version switcher should stay hidden for a single version`);
+            }
+            return;
+        }
+        if (switcher.hidden) {
+            fail(`${label} version switcher did not render. Console errors: ${errors.join(" | ") || "none"}`);
+        }
+        if (options.length !== expectedVersionCount) {
+            fail(`Expected ${expectedVersionCount} ${label} version options, found ${options.length}`);
+        }
+        if (new Set(options.map((option) => option.value)).size !== options.length) {
+            fail(`${label} version switcher rendered duplicate options: ${options.map((option) => option.value).join(", ")}`);
+        }
     }
 
     async function runPage(relativePath, pageUrl, mode) {
@@ -92,15 +114,7 @@ async function main() {
     if (!hostedNav) {
         fail(`Hosted docs top nav was not rendered. Console errors: ${hosted.errors.join(" | ") || "none"}`);
     }
-    if (!hostedSwitcher || hostedSwitcher.hidden) {
-        fail(`Hosted version switcher did not render. Console errors: ${hosted.errors.join(" | ") || "none"}`);
-    }
-    if (hostedOptions.length < 2) {
-        fail(`Expected at least 2 hosted version options, found ${hostedOptions.length}`);
-    }
-    if (new Set(hostedOptions.map((option) => option.value)).size !== hostedOptions.length) {
-        fail(`Hosted version switcher rendered duplicate options: ${hostedOptions.map((option) => option.value).join(", ")}`);
-    }
+    assertVersionSwitcher("Hosted", hostedSwitcher, hostedOptions, hosted.errors);
 
     const fileRoot = path.resolve(siteRoot);
     const fileHome = await runPage("index.html", fileUrlFor(fileRoot, "index.html"), "file");
@@ -117,15 +131,7 @@ async function main() {
     if (!fileDocsNav) {
         fail(`Local file docs top nav was not rendered. Console errors: ${fileDocs.errors.join(" | ") || "none"}`);
     }
-    if (!fileDocsSwitcher || fileDocsSwitcher.hidden) {
-        fail(`Local file docs version switcher did not render. Console errors: ${fileDocs.errors.join(" | ") || "none"}`);
-    }
-    if (fileOptions.length < 2) {
-        fail(`Expected at least 2 local file version options, found ${fileOptions.length}`);
-    }
-    if (new Set(fileOptions.map((option) => option.value)).size !== fileOptions.length) {
-        fail(`Local file version switcher rendered duplicate options: ${fileOptions.map((option) => option.value).join(", ")}`);
-    }
+    assertVersionSwitcher("Local file docs", fileDocsSwitcher, fileOptions, fileDocs.errors);
 
     console.log(
         JSON.stringify(

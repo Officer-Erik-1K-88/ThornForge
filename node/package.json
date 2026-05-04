@@ -1,8 +1,8 @@
 {
-  "name": "piethorn-docs-tests",
+  "name": "thornforge-docs-tests",
   "private": true,
   "scripts": {
-    "test:docs-ui": "node test_docs_ui.mjs ../../site"
+    "test:docs-ui": "node test_docs_ui.mjs ${SITE_DIR:-../site}"
   },
   "devDependencies": {
     "jsdom": "^27.0.1"
