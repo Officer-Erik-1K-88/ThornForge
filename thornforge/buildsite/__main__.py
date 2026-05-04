@@ -1,10 +1,11 @@
 import argparse
 from pathlib import Path
+from typing import Sequence
 
 from thornforge.buildsite.build_site import build_versioned_site
 
 
-def parse_args() -> argparse.Namespace:
+def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     """Parse command-line arguments for the build command.
 
     Returns:
@@ -30,10 +31,10 @@ def parse_args() -> argparse.Namespace:
         required=True,
         help="Directory where the assembled static site should be written.",
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 
-def main() -> None:
+def main(argv: Sequence[str] | None = None) -> None:
     """Entry point used by ``python -m thornforge.build_versioned_docs``.
 
     The function parses command-line arguments, normalizes local paths to
@@ -41,7 +42,7 @@ def main() -> None:
     ``build_versioned_site``.
     """
 
-    args = parse_args()
+    args = parse_args(argv)
     # Preserve remote URLs as strings but normalize existing local paths to absolute paths.
     source = Path(args.source).resolve() if Path(args.source).exists() else args.source
     build_versioned_site(source, args.output.resolve())
