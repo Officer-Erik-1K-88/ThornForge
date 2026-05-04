@@ -24,7 +24,8 @@ but has yet to be released as a version.
 
 Changes:
 
-* Moved assets to be in source root.
+- Added content to ``README.rst``.
+- Moved assets to be in source root.
 
 PreReleases
 ===========
