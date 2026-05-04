@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/publish.yml
     with:
       ref: ${{ inputs.ref }}
-      gitrelease: ${{ inputs.gitrelease }}
+      gitrelease: ${{ github.event_name == "push" || inputs.gitrelease }}
       thornforge-ref: ${{ inputs.thornforge-ref }}
       environment: "publish"
       environment-name: ${{ inputs.environment-name }}
