@@ -1,1 +1,36 @@
-./.venv/bin/python -m thornforge.build_versioned_docs --source /mnt/programming/Libs/Python/PieThorn/ --output ./test-site
+#!/usr/bin/env bash
+set -euo pipefail
+
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "${script_dir}/.." && pwd)"
+
+python_bin="${PYTHON:-${repo_root}/.venv/bin/python}"
+source_dir="${1:-${THORNFORGE_TEST_SOURCE:-/mnt/programming/Libs/Python/PieThorn/}}"
+output_dir="${2:-${THORNFORGE_TEST_OUTPUT:-${repo_root}/test-site}}"
+
+if [[ ! -x "${python_bin}" ]]; then
+    python_bin="python3"
+fi
+
+cd "${repo_root}"
+
+"${python_bin}" - "${repo_root}" "${source_dir}" "${output_dir}" <<'PY'
+from pathlib import Path
+import sys
+import types
+
+repo_root = Path(sys.argv[1])
+source = sys.argv[2]
+output = Path(sys.argv[3]).resolve()
+
+# ThornForge's package metadata is only available after installation. This
+# helper runs from a checkout, so expose the package path without importing the
+# metadata-reading package initializer.
+thornforge = types.ModuleType("thornforge")
+thornforge.__path__ = [str(repo_root / "thornforge")]
+sys.modules["thornforge"] = thornforge
+
+from thornforge.buildsite.build_site import build_versioned_site
+
+build_versioned_site(source, output)
+PY
