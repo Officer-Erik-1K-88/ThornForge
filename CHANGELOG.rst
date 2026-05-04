@@ -24,9 +24,6 @@ but has yet to be released as a version.
 
 Changes:
 
-- Added content to ``README.rst``.
-- Moved assets to be in source root.
-
 PreReleases
 ===========
 
@@ -40,6 +37,8 @@ v0.1.0rc1
 
 Changes:
 
+- Added content to ``README.rst``.
+- Moved assets to be in source root.
 - Added the project documentation, packaging manifest, and publish workflows for
   release builds.
 - Added the initial command-line entry points and registered command dispatch for
