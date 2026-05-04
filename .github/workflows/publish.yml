@@ -211,7 +211,7 @@ jobs:
 
   github-release:
     name: Create GitHub Release
-    needs: [ test-pypi, publish-pypi, build, resolve-info ]
+    needs: [ publish-testpypi, publish-pypi, build, resolve-info ]
     if: >-
       ${{
         always() &&
@@ -220,15 +220,15 @@ jobs:
           inputs.gitrelease ||
           contains(inputs.environment, 'release')
         ) &&
-        inputs.environment != "build" &&
-        needs.test-pypi.result != 'failure' &&
-        needs.test-pypi.result != 'cancelled' &&
+        inputs.environment != 'build' &&
+        needs.publish-testpypi.result != 'failure' &&
+        needs.publish-testpypi.result != 'cancelled' &&
         needs.publish-pypi.result != 'failure' &&
         needs.publish-pypi.result != 'cancelled' &&
         needs.build.result != 'failure' &&
         needs.build.result != 'cancelled' &&
         (
-          needs.test-pypi.result == 'success' ||
+          needs.publish-testpypi.result == 'success' ||
           needs.publish-pypi.result == 'success' ||
           needs.build.result == 'success'
         )
