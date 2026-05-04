@@ -29,7 +29,7 @@ async function main() {
     }
     const expectedVersionCount = versionsPayload.versions.length;
 
-    function assertVersionSwitcher(label, switcher, options, errors) {
+    function assertVersionSwitcher(label, switcher, options, errors, selectedValue = null) {
         if (!switcher) {
             fail(`${label} version switcher element is missing. Console errors: ${errors.join(" | ") || "none"}`);
         }
@@ -48,10 +48,16 @@ async function main() {
         if (new Set(options.map((option) => option.value)).size !== options.length) {
             fail(`${label} version switcher rendered duplicate options: ${options.map((option) => option.value).join(", ")}`);
         }
+        if (selectedValue && switcher.querySelector("select")?.value !== selectedValue) {
+            fail(`${label} version switcher selected ${switcher.querySelector("select")?.value || "nothing"}, expected ${selectedValue}`);
+        }
     }
 
-    async function runPage(relativePath, pageUrl, mode) {
-        const html = await readText(siteRoot, relativePath);
+    async function runPage(relativePath, pageUrl, mode, options = {}) {
+        let html = await readText(siteRoot, relativePath);
+        if (options.removeVersionsPayload) {
+            html = html.replace(/\n?<script id="versions-data" type="application\/json">[\s\S]*?<\/script>/, "");
+        }
         const dom = new JSDOM(html, {
             url: pageUrl,
             runScripts: "outside-only",
@@ -86,10 +92,11 @@ async function main() {
             };
         }
 
+        const scriptVersion = options.scriptVersion || latestVersion;
         const scripts = [
-            path.join("docs", latestVersion, "_static", "documentation_options.js"),
-            path.join("docs", latestVersion, "assets", "scripts", "top-nav.js"),
-            path.join("docs", latestVersion, "assets", "scripts", "version-switcher.js"),
+            path.join("docs", scriptVersion, "_static", "documentation_options.js"),
+            path.join("docs", scriptVersion, "assets", "scripts", "top-nav.js"),
+            path.join("docs", scriptVersion, "assets", "scripts", "version-switcher.js"),
         ];
 
         for (const scriptPath of scripts) {
@@ -114,7 +121,27 @@ async function main() {
     if (!hostedNav) {
         fail(`Hosted docs top nav was not rendered. Console errors: ${hosted.errors.join(" | ") || "none"}`);
     }
-    assertVersionSwitcher("Hosted", hostedSwitcher, hostedOptions, hosted.errors);
+    assertVersionSwitcher("Hosted", hostedSwitcher, hostedOptions, hosted.errors, latestVersion);
+
+    const prereleaseVersion = versionsPayload.versions.find((version) => version.name !== latestVersion)?.name;
+    if (prereleaseVersion) {
+        const prereleaseDocsPath = path.join("docs", prereleaseVersion, "index.html");
+        const hostedPrerelease = await runPage(
+            prereleaseDocsPath,
+            `https://example.test/PieThorn/docs/${prereleaseVersion}`,
+            "hosted",
+            { removeVersionsPayload: true, scriptVersion: prereleaseVersion },
+        );
+        const hostedPrereleaseSwitcher = hostedPrerelease.window.document.getElementById("version-switcher");
+        const hostedPrereleaseOptions = [...hostedPrerelease.window.document.querySelectorAll("#version-select option")];
+        assertVersionSwitcher(
+            "Hosted prerelease without trailing slash",
+            hostedPrereleaseSwitcher,
+            hostedPrereleaseOptions,
+            hostedPrerelease.errors,
+            prereleaseVersion,
+        );
+    }
 
     const fileRoot = path.resolve(siteRoot);
     const fileHome = await runPage("index.html", fileUrlFor(fileRoot, "index.html"), "file");
@@ -131,7 +158,7 @@ async function main() {
     if (!fileDocsNav) {
         fail(`Local file docs top nav was not rendered. Console errors: ${fileDocs.errors.join(" | ") || "none"}`);
     }
-    assertVersionSwitcher("Local file docs", fileDocsSwitcher, fileOptions, fileDocs.errors);
+    assertVersionSwitcher("Local file docs", fileDocsSwitcher, fileOptions, fileDocs.errors, latestVersion);
 
     console.log(
         JSON.stringify(

@@ -23,15 +23,6 @@
         return null;
     }
 
-    function getVersionRoot() {
-        var contentRoot = getContentRoot();
-        if (!contentRoot) {
-            return null;
-        }
-
-        return new URL(contentRoot, window.location.href);
-    }
-
     function getEmbeddedPayload(scriptId) {
         var script = document.getElementById(scriptId);
         if (!script || !script.textContent) {
@@ -47,6 +38,47 @@
 
     function normalizePathname(pathname) {
         return pathname.endsWith("/") ? pathname : pathname + "/";
+    }
+
+    function getVersionSegment(pathname) {
+        var marker = "/docs/";
+        var index = pathname.indexOf(marker);
+        if (index === -1) {
+            return null;
+        }
+
+        var remainder = pathname.slice(index + marker.length);
+        var version = remainder.split("/")[0];
+        return version || null;
+    }
+
+    function getVersionRootFromPath() {
+        var marker = "/docs/";
+        var pathname = window.location.pathname;
+        var index = pathname.indexOf(marker);
+        var version = getVersionSegment(pathname);
+        if (index === -1 || !version) {
+            return null;
+        }
+
+        return new URL(pathname.slice(0, index + marker.length) + version + "/", window.location.href);
+    }
+
+    function getVersionRoot() {
+        var pathVersionRoot = getVersionRootFromPath();
+        var pathVersion = getVersionSegment(window.location.pathname);
+        var contentRoot = getContentRoot();
+        if (!contentRoot) {
+            return pathVersionRoot;
+        }
+
+        var metadataVersionRoot = new URL(contentRoot, window.location.href);
+        var metadataVersion = getVersionSegment(metadataVersionRoot.pathname);
+        if (pathVersionRoot && pathVersion && metadataVersion !== pathVersion) {
+            return pathVersionRoot;
+        }
+
+        return metadataVersionRoot;
     }
 
     function detectCurrentVersion(versions, siteRoot) {

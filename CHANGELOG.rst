@@ -24,7 +24,8 @@ but has yet to be released as a version.
 
 Changes:
 
-NONE
+- Fixed version switcher bug where the version switcher
+  is empty until page refresh.
 
 PreReleases
 ===========
