@@ -1,0 +1,237 @@
+name: Publish Package
+
+on:
+  workflow_dispatch:
+    inputs:
+      # Project Stuff
+      ref:
+        description: "Git ref to build from"
+        required: false
+        type: string
+      # GitHub Releases Stuff
+      gitrelease:
+        description: "Whether to release with a GitHub Release."
+        required: true
+        type: boolean
+        default: true
+      gitname:
+        description: "The name to give the release."
+        required: false
+        type: string
+      gitprerelease:
+        description: "Indicator of whether or not the release is a prerelease."
+        required: false
+        type: boolean
+        default: false
+      gitdraft:
+        description: "Keep the release as a draft."
+        required: false
+        type: boolean
+        default: false
+      # ThornForge Stuff
+      thornforge-ref:
+        description: "The Git ref of the ThornForge repo to use"
+        required: false
+        type: string
+        default: main
+      # PyPi Environment Stuff
+      environment:
+        description: "The Environment to use"
+        required: true
+        type: choice
+        options:
+          - "test"
+          - "publish"
+          - "release"
+          - "test-release"
+          - "publish-release"
+          - "test-publish"
+          - "test-publish-release"
+          - "build" # This exists so that we can run just the build job
+      environment-name:
+        description: "The name of the PyPi environment"
+        required: false
+        type: string
+        default: pypi
+      environment-project:
+        description: "The name of the PyPi project."
+        required: false
+        type: string
+      test-environment-name:
+        description: "The name of the TestPyPi environment"
+        required: false
+        type: string
+        default: testpypi
+      test-environment-project:
+        description: "The name of the TestPyPi project."
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      # Project Stuff
+      ref:
+        description: "Git ref to build from"
+        required: false
+        type: string
+      # GitHub Releases Stuff
+      gitrelease:
+        description: "Whether to release with a GitHub Release."
+        required: true
+        type: boolean
+        default: true
+      gitname:
+        description: "The name to give the release."
+        required: false
+        type: string
+      gitprerelease:
+        description: "Indicator of whether or not the release is a prerelease."
+        required: false
+        type: boolean
+        default: false
+      gitdraft:
+        description: "Keep the release as a draft."
+        required: false
+        type: boolean
+        default: false
+      # ThornForge Stuff
+      thornforge-ref:
+        description: "The Git ref of the ThornForge repo to use"
+        required: false
+        type: string
+        default: main
+      # PyPi Environment Stuff
+      environment:
+        description: "The Environment to use"
+        required: true
+        type: string
+      environment-name:
+        description: "The name of the PyPi environment"
+        required: false
+        type: string
+        default: pypi
+      environment-project:
+        description: "The name of the PyPi project."
+        required: false
+        type: string
+      test-environment-name:
+        description: "The name of the TestPyPi environment"
+        required: false
+        type: string
+        default: testpypi
+      test-environment-project:
+        description: "The name of the TestPyPi project."
+        required: false
+        type: string
+
+jobs:
+  resolve-info:
+    uses: Officer-Erik-1K-88/ThornForge/.github/workflows/info.yml@main
+    with:
+      ref: ${{ inputs.ref }}
+      thornforge-ref: ${{ inputs.thornforge-ref }}
+      environment-name: ${{ inputs.environment-name }}
+      environment-project: ${{ inputs.environment-project }}
+      test-environment-name: ${{ inputs.test-environment-name }}
+      test-environment-project: ${{ inputs.test-environment-project }}
+
+  build:
+    name: Build Distributions
+    runs-on: ubuntu-latest
+    needs: resolve-info
+    permissions:
+      contents: read
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.resolve-info.outputs.project-ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install build tools
+        run: python -m pip install --upgrade build twine
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Check distributions
+        run: python -m twine check dist/*
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: python-package-distributions
+          path: dist/
+
+  publish-testpypi:
+    name: Publish To TestPyPI
+    if: ${{ contains(inputs.environment, "test") }}
+    needs: [ build, resolve-info ]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.resolve-info.outputs.test-environment }}
+      url: https://test.pypi.org/p/${{ needs.resolve-info.outputs.test-project-name }}
+    permissions:
+      id-token: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish package distributions to TestPyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+
+  publish-pypi:
+    name: Publish To PyPI
+    if: ${{ contains(inputs.environment, "publish") }}
+    needs: [ build, resolve-info ]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.resolve-info.outputs.live-environment }}
+      url: https://pypi.org/p/${{ needs.resolve-info.outputs.project-name }}
+    permissions:
+      id-token: write
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Create GitHub Release
+    needs: [ publish-pypi, resolve-info ]
+    if: ${{ inputs.gitrelease || contains(inputs.environment, "release") }}
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    environment: github-releases
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        env:
+          TAG_NAME: ${{ case(needs.resolve-info.outputs.project-ref != github.ref, needs.resolve-info.outputs.project-ref, github.ref_name) }}
+        with:
+          name: ${{ case(inputs.gitname != '', inputs.gitname, env.TAG_NAME) }}
+          tag_name: ${{ env.TAG_NAME }}
+          draft: ${{ inputs.gitdraft }}
+          prerelease: ${{ inputs.gitprerelease }}
+          generate_release_notes: true
+          files: dist/*

@@ -24,61 +24,14 @@ on:
         description: "The name of the TestPyPi project."
         required: false
         type: string
-  workflow_call:
-    inputs:
-      ref:
-        description: "Git ref to build from"
-        required: false
-        type: string
-      thornforge-ref:
-        description: "The Git ref of the ThornForge repo to use"
-        required: false
-        type: string
-        default: main
-      environment-name:
-        description: "The name of the TestPyPi environment"
-        required: false
-        type: string
-        default: testpypi
-      environment-project:
-        description: "The name of the TestPyPi project."
-        required: false
-        type: string
 
 jobs:
   resolve-info:
-    uses: Officer-Erik-1K-88/ThornForge/.github/workflows/info.yml@main
+    uses: ./.github/workflows/publish.yml
     with:
       ref: ${{ inputs.ref }}
+      gitrelease: false
       thornforge-ref: ${{ inputs.thornforge-ref }}
+      environment: "test"
       test-environment-name: ${{ inputs.environment-name }}
       test-environment-project: ${{ inputs.environment-project }}
-
-  build:
-    needs: resolve-info
-    permissions:
-      contents: read
-    uses: Officer-Erik-1K-88/ThornForge/.github/workflows/build.yml@main
-    with:
-      ref: ${{ needs.resolve-info.outputs.project-ref }}
-  
-  publish-testpypi:
-    name: Publish To TestPyPI
-    needs: [build, resolve-info]
-    runs-on: ubuntu-latest
-    environment:
-      name: ${{ needs.resolve-info.outputs.test-environment }}
-      url: https://test.pypi.org/p/${{ needs.resolve-info.outputs.test-project-name }}
-    permissions:
-      id-token: write
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v7
-        with:
-          name: python-package-distributions
-          path: dist/
-
-      - name: Publish package distributions to TestPyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
