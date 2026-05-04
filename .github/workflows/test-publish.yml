@@ -26,7 +26,7 @@ on:
         type: string
 
 jobs:
-  resolve-info:
+  publish:
     uses: ./.github/workflows/publish.yml
     with:
       ref: ${{ inputs.ref }}
