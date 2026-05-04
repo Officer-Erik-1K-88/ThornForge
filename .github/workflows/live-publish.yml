@@ -15,22 +15,70 @@ on:
         required: true
         type: boolean
         default: true
+      thornforge-ref:
+        description: "The Git ref of the ThornForge repo to use"
+        required: false
+        type: string
+        default: main
+      environment-name:
+        description: "The name of the PyPi environment"
+        required: false
+        type: string
+        default: pypi
+      environment-project:
+        description: "The name of the PyPi project."
+        required: false
+        type: string
+  workflow_call:
+    inputs:
+      ref:
+        description: "Git ref to build from"
+        required: false
+        type: string
+      gitrelease:
+        description: "Whether to release with a GitHub Release."
+        required: true
+        type: boolean
+        default: true
+      thornforge-ref:
+        description: "The Git ref of the ThornForge repo to use"
+        required: false
+        type: string
+        default: main
+      environment-name:
+        description: "The name of the PyPi environment"
+        required: false
+        type: string
+        default: pypi
+      environment-project:
+        description: "The name of the PyPi project."
+        required: false
+        type: string
 
 jobs:
+  resolve-info:
+    uses: Officer-Erik-1K-88/ThornForge/.github/workflows/info.yml@main
+    with:
+      ref: inputs.ref
+      thornforge-ref: inputs.thornforge-ref
+      environment-name: inputs.environment-name
+      environment-project: inputs.environment-project
+
   build:
+    needs: resolve-info
     permissions:
       contents: read
-    uses: ./.github/workflows/build.yml
+    uses: ${{ needs.resolve-info.outputs.thornforge-repository }}/./.github/workflows/build.yml@${{ needs.resolve-info.outputs.thornforge-ref }}
     with:
-      ref: ${{ case(inputs.ref != '', inputs.ref, github.ref) }}
+      ref: ${{ needs.resolve-info.outputs.project-ref }}
 
   publish-pypi:
     name: Publish To PyPI
-    needs: build
+    needs: [build, resolve-info]
     runs-on: ubuntu-latest
     environment:
-      name: pypi
-      url: https://pypi.org/p/thornforge
+      name: needs.resolve-info.outputs.live-environment
+      url: https://pypi.org/p/${{ needs.resolve-info.outputs.project-name }}
     permissions:
       id-token: write
     steps:
@@ -45,10 +93,10 @@ jobs:
 
   github-release:
     name: Create GitHub Release
-    needs: publish-pypi
-    if: ${{ github.event_name == 'push' || (github.event_name=='workflow_dispatch' && inputs.gitrelease) }}
+    needs: [publish-pypi, resolve-info]
+    if: ${{ github.event_name == 'push' || (contains(fromJSON('["workflow_dispatch", "workflow_call"]'), github.event_name) && inputs.gitrelease) }}
     permissions:
       contents: write
-    uses: ./.github/workflows/release.yml
+    uses: ${{ needs.resolve-info.outputs.thornforge-repository }}/.github/workflows/release.yml@${{ needs.resolve-info.outputs.thornforge-ref }}
     with:
-      ref: ${{ case(inputs.ref != '', inputs.ref, github.ref) }}
+      ref: ${{ needs.resolve-info.outputs.project-ref }}

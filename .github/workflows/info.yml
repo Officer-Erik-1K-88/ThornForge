@@ -1,0 +1,143 @@
+name: Get Workflow Needed Information
+
+on:
+  workflow_call:
+    inputs:
+      # Project Stuff
+      ref:
+        description: "Git ref to build from"
+        required: false
+        type: string
+      # ThornForge Stuff
+      thornforge-ref:
+        description: "The Git ref of the ThornForge repo to use"
+        required: false
+        type: string
+        default: main
+      # PyPi Environment Stuff
+      environment-name:
+        description: "The name of the PyPi environment"
+        required: false
+        type: string
+        default: pypi
+      environment-project:
+        description: "The name of the PyPi project."
+        required: false
+        type: string
+      test-environment-name:
+        description: "The name of the TestPyPi environment"
+        required: false
+        type: string
+        default: testpypi
+      test-environment-project:
+        description: "The name of the TestPyPi project."
+        required: false
+        type: string
+    outputs:
+      # Project Outputs
+      repo-name:
+        description: "The name of the repository without OWNER"
+        value: ${{ jobs.resolve-project.outputs.repo-name }}
+      project-ref:
+        description: "The Git ref to use in the workflows"
+        value: ${{ jobs.resolve-project.outputs.ref }}
+      # ThornForge Outputs
+      thornforge-ref:
+        description: "The Git ref that will be used for ThornForge operations in the workflows"
+        value: ${{ jobs.resolve-thornforge.outputs.ref }}
+      thornforge-repository:
+        description: "The GITHUB_REPOSITORY (OWNER/REPO_NAME) of the ThornForge repository"
+        value: ${{ jobs.resolve-thornforge.outputs.repository }}
+      # Environment Outputs
+      project-name:
+        description: "The name of the project on PyPi"
+        value: ${{ jobs.resolve-environment.outputs.project-name }}
+      live-environment:
+        description: "The environment name used for publishing to PyPi"
+        value: ${{ jobs.resolve-environment.outputs.live-environment }}
+      test-project-name:
+        description: "The name of the project on TestPyPi"
+        value: ${{ jobs.resolve-environment.outputs.test-project-name }}
+      test-environment:
+        description: "The environment name used for publishing to TestPyPi"
+        value: ${{ jobs.resolve-environment.outputs.test-environment }}
+
+jobs:
+  resolve-project:
+    name: Get Repository Level Information
+    runs-on: ubuntu-latest
+
+    outputs:
+      repo-name: ${{ steps.project-repo.outputs.name }}
+      ref: ${{ steps.project-ref.outputs.ref }}
+
+    steps:
+      - id: project-repo
+        run: echo "name=${GITHUB_REPOSITORY#*/}" >> "$GITHUB_OUTPUT"
+      - id: project-ref
+        run: |
+          if [ -n "${{ inputs.ref }}" ]; then
+            echo "ref=${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${ GITHUB_REF }" >> "$GITHUB_OUTPUT"
+          fi
+
+  resolve-environment:
+    name: Get Environment Level Information
+    runs-on: ubuntu-latest
+    needs: resolve-project
+
+    outputs:
+      project-name: ${{ steps.project.outputs.name }}
+      live-environment: ${{ steps.live.outputs.name }}
+      test-project-name: ${{ steps.test-project.outputs.name }}
+      test-environment: ${{ steps.test.outputs.name }}
+
+    steps:
+      - id: project
+        run: |
+          if [ -n "${{ inputs.environment-project }}" ]; then
+            echo "name=${{ inputs.environment-project }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${ needs.resolve-project.outputs.repo-name }" >> "$GITHUB_OUTPUT"
+          fi
+      - id: live
+        run: |
+          if [ -n "${{ inputs.environment-name }}" ]; then
+            echo "name=${{ inputs.environment-name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=pypi" >> "$GITHUB_OUTPUT"
+          fi
+      - id: test-project
+        run: |
+          if [ -n "${{ inputs.test-environment-project }}" ]; then
+            echo "name=${{ inputs.test-environment-project }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${ steps.project.outputs.name }" >> "$GITHUB_OUTPUT"
+          fi
+      - id: test
+        run: |
+          if [ -n "${{ inputs.test-environment-name }}" ]; then
+            echo "name=${{ inputs.test-environment-name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=testpypi" >> "$GITHUB_OUTPUT"
+          fi
+
+  resolve-thornforge:
+    name: Get ThornForge Operation Information
+    runs-on: ubuntu-latest
+
+    outputs:
+      repository: ${{ steps.repo.outputs.name }}
+      ref: ${{ steps.ref.outputs.name }}
+
+    steps:
+      - id: repo
+        run: echo "name=Officer-Erik-1K-88/ThornForge" >> "$GITHUB_OUTPUT"
+      - id: ref
+        run: |
+          if [ -n "${{ inputs.thornforge-ref }}" ]; then
+            echo "name=${{ inputs.thornforge-ref }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=main" >> "$GITHUB_OUTPUT"
+          fi
