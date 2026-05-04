@@ -169,7 +169,7 @@ jobs:
 
   publish-testpypi:
     name: Publish To TestPyPI
-    if: ${{ contains(inputs.environment, "test") }}
+    if: ${{ contains(inputs.environment, 'test') }}
     needs: [ build, resolve-info ]
     runs-on: ubuntu-latest
     environment:
@@ -191,7 +191,7 @@ jobs:
 
   publish-pypi:
     name: Publish To PyPI
-    if: ${{ contains(inputs.environment, "publish") }}
+    if: ${{ contains(inputs.environment, 'publish') }}
     needs: [ build, resolve-info ]
     runs-on: ubuntu-latest
     environment:
@@ -211,8 +211,28 @@ jobs:
 
   github-release:
     name: Create GitHub Release
-    needs: [ build, resolve-info ]
-    if: ${{ (inputs.gitrelease || contains(inputs.environment, "release")) and inputs.environment != "build" }}
+    needs: [ test-pypi, publish-pypi, build, resolve-info ]
+    if: >-
+      ${{
+        always() &&
+        needs.resolve-info.result == 'success' &&
+        (
+          inputs.gitrelease ||
+          contains(inputs.environment, 'release')
+        ) &&
+        inputs.environment != "build" &&
+        needs.test-pypi.result != 'failure' &&
+        needs.test-pypi.result != 'cancelled' &&
+        needs.publish-pypi.result != 'failure' &&
+        needs.publish-pypi.result != 'cancelled' &&
+        needs.build.result != 'failure' &&
+        needs.build.result != 'cancelled' &&
+        (
+          needs.test-pypi.result == 'success' ||
+          needs.publish-pypi.result == 'success' ||
+          needs.build.result == 'success'
+        )
+      }}
     permissions:
       contents: write
     runs-on: ubuntu-latest
