@@ -41,7 +41,7 @@ jobs:
         with:
           name: ${{ case(inputs.name != '', inputs.name, inputs.ref != '' && inputs.ref != github.ref, inputs.ref, github.ref_name) }}
           tag_name: ${{ case(inputs.ref != '' && inputs.ref != github.ref, inputs.ref, github.ref_name) }}
-          draft: inputs.draft
-          prerelease: inputs.prerelease
+          draft: ${{ inputs.draft }}
+          prerelease: ${{ inputs.prerelease }}
           generate_release_notes: true
           files: dist/*

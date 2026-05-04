@@ -75,11 +75,13 @@ jobs:
       - id: project-repo
         run: echo "name=${GITHUB_REPOSITORY#*/}" >> "$GITHUB_OUTPUT"
       - id: project-ref
+        env:
+          INPUT_REF: ${{ inputs.ref }}
         run: |
-          if [ -n "${{ inputs.ref }}" ]; then
-            echo "ref=${{ inputs.ref }}" >> "$GITHUB_OUTPUT"
+          if [ -n "$INPUT_REF" ]; then
+            echo "ref=$INPUT_REF" >> "$GITHUB_OUTPUT"
           else
-            echo "ref=${ GITHUB_REF }" >> "$GITHUB_OUTPUT"
+            echo "ref=$GITHUB_REF" >> "$GITHUB_OUTPUT"
           fi
 
   resolve-environment:
@@ -95,30 +97,40 @@ jobs:
 
     steps:
       - id: project
+        env:
+          ENVIRONMENT_PROJECT: ${{ inputs.environment-project }}
+          REPO_NAME: ${{ needs.resolve-project.outputs.repo-name }}
         run: |
-          if [ -n "${{ inputs.environment-project }}" ]; then
-            echo "name=${{ inputs.environment-project }}" >> "$GITHUB_OUTPUT"
+          if [ -n "$ENVIRONMENT_PROJECT" ]; then
+            echo "name=$ENVIRONMENT_PROJECT" >> "$GITHUB_OUTPUT"
           else
-            echo "name=${ needs.resolve-project.outputs.repo-name }" >> "$GITHUB_OUTPUT"
+            echo "name=$REPO_NAME" >> "$GITHUB_OUTPUT"
           fi
       - id: live
+        env:
+          ENVIRONMENT_NAME: ${{ inputs.environment-name }}
         run: |
-          if [ -n "${{ inputs.environment-name }}" ]; then
-            echo "name=${{ inputs.environment-name }}" >> "$GITHUB_OUTPUT"
+          if [ -n "$ENVIRONMENT_NAME" ]; then
+            echo "name=$ENVIRONMENT_NAME" >> "$GITHUB_OUTPUT"
           else
             echo "name=pypi" >> "$GITHUB_OUTPUT"
           fi
       - id: test-project
+        env:
+          TEST_ENVIRONMENT_PROJECT: ${{ inputs.test-environment-project }}
+          PROJECT_NAME: ${{ steps.project.outputs.name }}
         run: |
-          if [ -n "${{ inputs.test-environment-project }}" ]; then
-            echo "name=${{ inputs.test-environment-project }}" >> "$GITHUB_OUTPUT"
+          if [ -n "$TEST_ENVIRONMENT_PROJECT" ]; then
+            echo "name=$TEST_ENVIRONMENT_PROJECT" >> "$GITHUB_OUTPUT"
           else
-            echo "name=${ steps.project.outputs.name }" >> "$GITHUB_OUTPUT"
+            echo "name=$PROJECT_NAME" >> "$GITHUB_OUTPUT"
           fi
       - id: test
+        env:
+          TEST_ENVIRONMENT_NAME: ${{ inputs.test-environment-name }}
         run: |
-          if [ -n "${{ inputs.test-environment-name }}" ]; then
-            echo "name=${{ inputs.test-environment-name }}" >> "$GITHUB_OUTPUT"
+          if [ -n "$TEST_ENVIRONMENT_NAME" ]; then
+            echo "name=$TEST_ENVIRONMENT_NAME" >> "$GITHUB_OUTPUT"
           else
             echo "name=testpypi" >> "$GITHUB_OUTPUT"
           fi
@@ -135,9 +147,11 @@ jobs:
       - id: repo
         run: echo "name=Officer-Erik-1K-88/ThornForge" >> "$GITHUB_OUTPUT"
       - id: ref
+        env:
+          THORNFORGE_REF: ${{ inputs.thornforge-ref }}
         run: |
-          if [ -n "${{ inputs.thornforge-ref }}" ]; then
-            echo "name=${{ inputs.thornforge-ref }}" >> "$GITHUB_OUTPUT"
+          if [ -n "$THORNFORGE_REF" ]; then
+            echo "name=$THORNFORGE_REF" >> "$GITHUB_OUTPUT"
           else
             echo "name=main" >> "$GITHUB_OUTPUT"
           fi

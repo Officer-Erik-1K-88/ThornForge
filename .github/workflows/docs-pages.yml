@@ -51,8 +51,8 @@ jobs:
   resolve-info:
     uses: Officer-Erik-1K-88/ThornForge/.github/workflows/info.yml@main
     with:
-      ref: inputs.ref
-      thornforge-ref: inputs.thornforge-ref
+      ref: ${{ inputs.ref }}
+      thornforge-ref: ${{ inputs.thornforge-ref }}
 
   build:
     name: Build Docs Site
@@ -96,7 +96,7 @@ jobs:
           python -m pip install -e .
 
       - name: Install docs UI test dependencies
-        working-directory: node
+        working-directory: thornforge/node
         run: npm ci
 
       - name: Configure GitHub Pages
@@ -107,13 +107,15 @@ jobs:
         run: thornforge buildsite --source . --output site
 
       - name: Verify docs UI
-        working-directory: node
+        working-directory: thornforge/node
         run: npm run test:docs-ui
+        env:
+          SITE_DIR: ../../project/site
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: site
+          path: project/site
 
   deploy:
     name: Deploy Docs Site

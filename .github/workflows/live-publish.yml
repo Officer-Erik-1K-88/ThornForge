@@ -59,16 +59,16 @@ jobs:
   resolve-info:
     uses: Officer-Erik-1K-88/ThornForge/.github/workflows/info.yml@main
     with:
-      ref: inputs.ref
-      thornforge-ref: inputs.thornforge-ref
-      environment-name: inputs.environment-name
-      environment-project: inputs.environment-project
+      ref: ${{ inputs.ref }}
+      thornforge-ref: ${{ inputs.thornforge-ref }}
+      environment-name: ${{ inputs.environment-name }}
+      environment-project: ${{ inputs.environment-project }}
 
   build:
     needs: resolve-info
     permissions:
       contents: read
-    uses: ${{ needs.resolve-info.outputs.thornforge-repository }}/./.github/workflows/build.yml@${{ needs.resolve-info.outputs.thornforge-ref }}
+    uses: Officer-Erik-1K-88/ThornForge/.github/workflows/build.yml@main
     with:
       ref: ${{ needs.resolve-info.outputs.project-ref }}
 
@@ -77,7 +77,7 @@ jobs:
     needs: [build, resolve-info]
     runs-on: ubuntu-latest
     environment:
-      name: needs.resolve-info.outputs.live-environment
+      name: ${{ needs.resolve-info.outputs.live-environment }}
       url: https://pypi.org/p/${{ needs.resolve-info.outputs.project-name }}
     permissions:
       id-token: write
@@ -97,6 +97,18 @@ jobs:
     if: ${{ github.event_name == 'push' || (contains(fromJSON('["workflow_dispatch", "workflow_call"]'), github.event_name) && inputs.gitrelease) }}
     permissions:
       contents: write
-    uses: ${{ needs.resolve-info.outputs.thornforge-repository }}/.github/workflows/release.yml@${{ needs.resolve-info.outputs.thornforge-ref }}
-    with:
-      ref: ${{ needs.resolve-info.outputs.project-ref }}
+    runs-on: ubuntu-latest
+    environment: github-releases
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v7
+        with:
+          name: python-package-distributions
+          path: dist/
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{ needs.resolve-info.outputs.project-ref != github.ref && needs.resolve-info.outputs.project-ref || github.ref_name }}
+          generate_release_notes: true
+          files: dist/*

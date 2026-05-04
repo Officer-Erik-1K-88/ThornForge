@@ -49,16 +49,16 @@ jobs:
   resolve-info:
     uses: Officer-Erik-1K-88/ThornForge/.github/workflows/info.yml@main
     with:
-      ref: inputs.ref
-      thornforge-ref: inputs.thornforge-ref
-      test-environment-name: inputs.environment-name
-      test-environment-project: inputs.environment-project
+      ref: ${{ inputs.ref }}
+      thornforge-ref: ${{ inputs.thornforge-ref }}
+      test-environment-name: ${{ inputs.environment-name }}
+      test-environment-project: ${{ inputs.environment-project }}
 
   build:
     needs: resolve-info
     permissions:
       contents: read
-    uses: ${{ needs.resolve-info.outputs.thornforge-repository }}/./.github/workflows/build.yml@${{ needs.resolve-info.outputs.thornforge-ref }}
+    uses: Officer-Erik-1K-88/ThornForge/.github/workflows/build.yml@main
     with:
       ref: ${{ needs.resolve-info.outputs.project-ref }}
   
@@ -67,7 +67,7 @@ jobs:
     needs: [build, resolve-info]
     runs-on: ubuntu-latest
     environment:
-      name: needs.resolve-info.outputs.test-environment
+      name: ${{ needs.resolve-info.outputs.test-environment }}
       url: https://test.pypi.org/p/${{ needs.resolve-info.outputs.test-project-name }}
     permissions:
       id-token: write
