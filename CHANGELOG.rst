@@ -24,8 +24,7 @@ but has yet to be released as a version.
 
 Changes:
 
-- Fixed project name display on pages.
-- Fixed own GitHub pages building.
+NONE
 
 PreReleases
 ===========
@@ -34,6 +33,22 @@ Here you'll find what is in prerelease tags.
 This is cleared when the official release of the
 prereleases arrives.
 This is mainly for organization purposes.
+
+NONE
+
+Published
+=========
+
+Here are the changes made in each version that has a public release.
+These will never change.
+
+0.1.0
+-----
+
+Initial public release.
+
+- Fixed project name display on pages.
+- Fixed own GitHub pages building.
 
 v0.1.0rc1
 ---------
@@ -60,11 +75,3 @@ Changes:
   metadata, select project pages, and choose fallback version labels.
 - Added the initial ThornForge build pipeline for generating versioned static
   documentation sites from local repositories or supported GitHub sources.
-
-Published
-=========
-
-Here are the changes made in each version that has a public release.
-These will never change.
-
-No public release tags have been created yet.
