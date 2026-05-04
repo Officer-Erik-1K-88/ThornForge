@@ -58,7 +58,7 @@ Highlights
 ``thornforge.cli``
    Top-level command dispatch, terminal configuration, and dependency reporting.
 
-``assets/``
+``thornforge/assets/``
    Shared templates, stylesheets, and JavaScript copied into generated sites.
 
 Project Status

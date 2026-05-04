@@ -55,6 +55,6 @@ menus can work without relying on extra network requests.
 Shared assets
 -------------
 
-ThornForge copies its ``assets/`` tree to the site root and to each canonical
-documentation build. Generated docs pages are post-processed to reference the
-shared CSS and JavaScript assets exactly once.
+ThornForge copies its bundled ``thornforge/assets/`` tree to the site root and
+to each canonical documentation build. Generated docs pages are post-processed
+to reference the shared CSS and JavaScript assets exactly once.

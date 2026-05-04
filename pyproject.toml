@@ -47,3 +47,14 @@ Changelog = "https://github.com/Officer-Erik-1K-88/ThornForge/blob/master/CHANGE
 
 [tool.setuptools_scm]
 version_file = "thornforge/_version.py"
+
+[tool.setuptools.packages.find]
+include = ["thornforge*"]
+
+[tool.setuptools.package-data]
+thornforge = [
+    "assets/scripts/*.js",
+    "assets/style/*.css",
+    "assets/templates/html/*.html",
+    "assets/templates/rst/*.rst",
+]

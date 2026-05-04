@@ -24,7 +24,7 @@ but has yet to be released as a version.
 
 Changes:
 
-No active changes have been logged yet.
+* Moved assets to be in source root.
 
 PreReleases
 ===========
