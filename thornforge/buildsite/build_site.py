@@ -203,7 +203,7 @@ def build_versioned_site(source: str | Path, output_dir: Path) -> None:
         # README/changelog-style files are rendered after the homepage decision.
         render_project_site_pages(repo_root, output_dir, profile.project_pages)
         # The frontend scripts consume these manifests to build navigation UIs.
-        site_nav_payload = write_site_nav_manifest(output_dir, latest)
+        site_nav_payload = write_site_nav_manifest(output_dir, latest, profile.project_name)
         versions_payload = write_docs_site_files(docs_dir, [version.name for version in versions], digests_by_version)
         # Inline the manifests into HTML so pages still work without extra fetches.
         embed_runtime_data(output_dir, site_nav_payload, versions_payload)

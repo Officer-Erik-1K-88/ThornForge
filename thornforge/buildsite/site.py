@@ -166,13 +166,14 @@ def collect_site_nav_pages(output_dir: Path) -> list[dict[str, str]]:
     return pages
 
 
-def write_site_nav_manifest(output_dir: Path, latest: str) -> dict[str, object]:
+def write_site_nav_manifest(output_dir: Path, latest: str, project_name: str) -> dict[str, object]:
     """Write the top-navigation manifest used by the frontend scripts.
 
     Args:
         output_dir: Generated site root where ``site-nav.json`` should be
             written.
         latest: Latest version label that should be exposed in nav metadata.
+        project_name: Display name used for the top-navigation brand.
 
     Returns:
         The Python payload object that was serialized to ``site-nav.json``.
@@ -180,6 +181,7 @@ def write_site_nav_manifest(output_dir: Path, latest: str) -> dict[str, object]:
 
     payload = {
         # Root pages and docs metadata are split because the frontend renders them differently.
+        "project_name": project_name,
         "pages": collect_site_nav_pages(output_dir),
         "docs": {
             "home": "docs/",

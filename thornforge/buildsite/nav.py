@@ -125,7 +125,7 @@ def inject_document_assets(document: str, stylesheet_hrefs: list[str], script_sr
     return wrapped
 
 
-def wrap_info_html_document(document: str, root_prefix: str, *, title: str = "PieThorn", current_path: str) -> str:
+def wrap_info_html_document(document: str, root_prefix: str, *, title: str, current_path: str) -> str:
     """Wrap arbitrary HTML or fragments in ThornForge's shared page shell.
 
     Args:

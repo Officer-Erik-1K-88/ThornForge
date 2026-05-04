@@ -24,6 +24,7 @@ but has yet to be released as a version.
 
 Changes:
 
+- Fixed project name display on pages.
 - Fixed own GitHub pages building.
 
 PreReleases

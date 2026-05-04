@@ -143,7 +143,7 @@
 
         var brand = document.createElement("div");
         brand.className = "site-top-nav__brand";
-        brand.textContent = "PieThorn";
+        brand.textContent = payload.project_name || "Documentation";
         inner.appendChild(brand);
 
         var links = document.createElement("div");

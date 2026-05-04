@@ -5,6 +5,7 @@ These tests build minimal temporary repositories so the generic build pipeline
 can be validated without depending on this repository's own layout.
 """
 
+import json
 from pathlib import Path
 import tempfile
 import unittest
@@ -102,8 +103,11 @@ class BuildSystemTests(unittest.TestCase):
             self.assertIn('href="assets/style/version.css"', index_html)
             self.assertIn('src="assets/scripts/top-nav.js"', index_html)
             self.assertIn('src="assets/scripts/version-switcher.js"', index_html)
+            self.assertIn('"project_name": "sample-project"', index_html)
             self.assertTrue((output_dir / "docs" / "latest").exists())
             self.assertTrue((output_dir / "docs" / "versions.json").exists())
+            site_nav = json.loads((output_dir / "site-nav.json").read_text(encoding="utf-8"))
+            self.assertEqual(site_nav["project_name"], "sample-project")
             self.assertTrue((output_dir / "changelog.html").exists())
             changelog_html = (output_dir / "changelog.html").read_text(encoding="utf-8")
             self.assertIn('<h1 class="title">Changelog</h1>', changelog_html)
